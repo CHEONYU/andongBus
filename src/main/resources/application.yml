@@ -1,0 +1,152 @@
+
+
+spring:
+  profiles:
+    active:
+    - dblocal
+    - redislocal
+    - tomcatlocal
+    - elasticlocal
+    - kafkaLocal
+    - mysqllocal
+
+  application:
+    name: luna-admin
+  jackson:
+    default-property-inclusion: NON_NULL
+  thymeleaf:
+    check-template-location: false
+    prefix: classpath:/static/
+
+# dblocal 환경
+---
+spring:
+  profiles: dblocal
+
+  data:
+    mongodb:
+      uri: mongodb://127.0.0.1:27017
+
+---
+spring:
+  profiles: dbReal
+
+  data:
+    mongodb:
+      uri: mongodb://team-core:HappyEnding201910!@test-log.cluster-cghtjgokrsze.ap-northeast-2.docdb.amazonaws.com:27017/db_product_link_service
+
+---
+
+spring:
+  profiles: redislocal
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    database: 0
+    #timeout: 2000
+
+---
+
+
+---
+spring:
+  profiles: tomcatlocal
+
+server:
+  port: 8080
+
+  tomcat:
+    accesslog:
+      enabled: true
+      prefix: access_log_ladmin-api
+      pattern: "[%A] [%v] [%{yyyy-MM-dd HH:mm:ss}t]  [%a] [%h] [%S] [accesslog] [%m] [%r] [%{User-Agent}i]"
+    basedir: /Users/eomjuntae/logs
+
+---
+spring:
+  profiles: tomcatReal
+
+server:
+  port: 80
+
+  tomcat:
+    accesslog:
+      enabled: true
+      prefix: access_log_ladmin-api
+      pattern: "[%A] [%v] [%{yyyy-MM-dd HH:mm:ss}t]  [%a] [%h] [%S] [accesslog] [%m] [%r] [%{User-Agent}i]"
+    basedir: /tomcat/
+
+---
+spring:
+  profiles: elasticlocal
+  elasticsearch:
+    clusterName: luna-lms
+    host: 127.0.0.1
+    port: 9300
+    resthost: 127.0.0.1
+    restport: 9200
+
+---
+spring:
+  profiles: kafkaLocal
+  kafka:
+    bootstrap-servers:
+      - 127.0.0.1:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+    consumer:
+      group-id: judy-consumer
+      auto-offset-reset: latest # latest - 토픽의 가장 마지막 부터 메시지를 가져옴, earliest - 처음부터 메시지를 가져옴
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      client-id: study-client-judy
+---
+spring:
+  profiles: kafkaDev
+  kafka:
+    bootstrap-servers:
+      - 172.31.19.30:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+    consumer:
+      group-id: study
+      auto-offset-reset: latest # latest - 토픽의 가장 마지막 부터 메시지를 가져옴, earliest - 처음부터 메시지를 가져옴
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      client-id: study-client-brian
+---
+spring:
+  profiles: mysqllocal
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/studydb?&autoReconnect=true&zeroDateTimeBehavior=convertToNull&useSSL=false #쓰기 DB
+    username: root
+    password: 123456
+    driverClassName: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    dbcp2:
+      validation-query: SELECT 1
+    hikari:
+      maximum-pool-size: 10
+      #minimum-idle: 100
+      max-lifetime: 60000 #1800000
+      connection-timeout: 30000 #30000
+      validation-timeout: 5000
+      #connection-test-query: SELECT 1
+      data-source-properties:
+        cachePrepStmts: true
+        prepStmtCacheSize: 250
+        prepStmtCacheSqlLimit: 2048
+        useServerPrepStmts: true
+
+  jpa:
+    show-sql: false
+    #database-platform: org.hibernate.dialect.MySQL5Dialect
+    hibernate:
+      ddl-auto: none #create 로 해놓으면 Data전체 삭제 됨. 개발 초기에는 update 사용하나 상용에는 none 필수.
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
