@@ -27,3 +27,4 @@ public class StudyApplication {
         return "IndexPage.html";
     }
 }
+
